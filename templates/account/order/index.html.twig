@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+
+<div class="container my-5">
+
+<div class="row">
+    <h1> Espace membre</h1>
+    <div class="col-md-3">
+        {% include 'account/_menu.html.twig' %}
+
+    </div>
+
+    <div class="col-md-9 ">
+        <h3>Commande N°{{ order.id }}</h3>
+        {{ include('admin/state.html.twig', { 'field': { 'value': order.state } }) }}
+
+        <p class="text-muted">Passée le {{ order.createdAt|date('d/m/Y H:i') }}</p>
+
+        <div class="row my-3">
+            <div class="col-md-6">
+                <strong>Adresse de livraison</strong><br/>
+                {{ order.delivery|raw }}
+            </div>
+            <div class="col-md-6">
+                <strong>Transporteur</strong><br/>
+                {{ order.carrierName }}
+            </div>
+        </div>
+
+        <div class="my-3">
+            <strong>Contenu de la commande :</strong>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Illustration</th>
+                <th scope="col">Produit</th>
+                <th scope="col">Quantité</th>
+                <th scope="col">Prix unitaire</th>
+                <th scope="col">TVA</th>
+                <th scope="col">Total TTC</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in order.orderDetails %}
+                <tr>
+                    <td>
+                        <img src="/uploads/{{ product.productIllustration }}" alt="{{ product.productName }}" width="100">
+                    </td>
+                    <td>{{ product.productName }}</td>
+                    <td>{{ product.productQuantity }}</td>
+                    <td>{{ product.Price|price }}</td>
+                    <td>{{ product.productTva }}%</td>
+                    {% set coeff = 1 + (product.productTva / 100) %}
+                    <td>{{ ((product.Price * coeff) * product.productQuantity)|price }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td>{{ order.carrierName }} (Transport)</td>
+                <td>1</td>
+                <td></td>
+                <td></td>
+                <td>{{ order.carrierPrice|price }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="text-end fs-5 my-3">
+            <strong>Total TVA : </strong> {{ order.totalTva|price }} <br/>
+            <strong>Total T.T.C : </strong> {{ order.totalWt|price }}
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

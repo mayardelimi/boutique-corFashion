@@ -1,0 +1,45 @@
+{% extends '/base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-5">
+
+        <h1>Espace privee !</h1>
+        </br>
+
+        <div class=" cold md-9 ">
+            {% include 'account/_menu.html.twig' %}
+            <div class="d-flex justify-content-between">
+            <h4>Liste de mes addresses</h4>
+            <a href="{{ path('app_account_address_form') }}" class="btn btn-light">Ajouter use address </a>
+            </div>
+            {% if app.user.addresses|length ==0 %}
+                <p>Vous n'avew pas encore enregistre d'address sur La Boutique Francaise </p>
+            {% endif %}
+            <div class='row'>
+                {% for address in app.user.addresses %}
+                <div class="col-md-4 mt-2">
+                    <div class="bg-light p-2 text-center ">
+                    <strong>{{ address.firstname }}{{ address.lastname }}</strong> <br/>
+                        {{ address.address }}<br/>
+                        {{ address.postal }} {{ address.city }}<br/>
+                        {{ address.country}}<br/>
+                        <a href="{{ path('app_account_address_form', {id: address.id}) }}" class="small text-secondary">
+                            Edit
+                        </a>
+
+                        <a href="{{ path('app_account_address_delete', {id: address.id}) }}" class="small text-secondary">
+                            Delete
+                        </a>
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+{% endblock %}

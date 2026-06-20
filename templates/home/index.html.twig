@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+{% block body  %}
+<main>
+    <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
+
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2"></button>
+        </div>
+
+        <div class="carousel-inner">
+
+            <!-- Slide 1 -->
+            <div class="carousel-item active">
+                <img src="{{ asset("uploads/morgane-leisser-uhVxyRbbkaQ-unsplash.jpg") }}" class="d-block w-100 carousel-img" alt="Bag 1">
+
+                <div class="container">
+                    <div class="carousel-caption text-start">
+                        <h1 class="text-dark">Découvrez votre style parfait</h1>
+                        <p class="opacity-75 text-dark">Explorez notre collection de sacs élégants et d'accessoires intemporels conçus pour sublimer chacune de vos tenues.</p>
+                        <p><a class="btn btn-lg btn-secondary" href="#categories">Decouvrire</a></p>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="carousel-item">
+                <img src="{{ asset('uploads/akhil-pawar-mo4IttpP4mo-unsplash.jpg') }}" class="d-block w-100 carousel-img" alt="Bag 2">
+
+                <div class="container">
+                    <div class="carousel-caption">
+                        <h1 >Rejoignez-nous</h1>
+                        <p >Inscrivez-vous et soyez les premiers à découvrir nos nouvelles collections</p>
+                        <p><a class="btn btn-lg btn-secondary" href="{{ path('app_register') }}">S’inscrire</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="carousel-item">
+                <img src="{{ asset('uploads/riku-lu-JsGcJHcHEjE-unsplash.jpg') }}" class="d-block w-100 carousel-img" alt="Bag 3">
+
+                <div class="container">
+                    <div class="carousel-caption text-end">
+                        <h1 >Complétez votre look</h1>
+                        <p class="opacity-75 ">Explorez notre collection de sacs élégants et d'accessoires intemporels conçus pour sublimer chacune de vos tenues</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+
+        <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+
+    </div>
+    <!-- Marketing messaging and featurettes
+    ================================================== -->
+    <!-- Wrap the rest of the page in another container to center all the content. -->
+
+    <div class="container marketing" id="categories" >
+
+
+
+        <div class="row">
+            {% for cat in categories %}
+                <div class="col-lg-4">
+                    <img src="/uploads/{{cat.image}}"
+                         alt="{{ cat.name }}"
+                         class="rounded-circle"
+                         width="140"
+                         height="140">
+                    <h2 class="fw-normal">{{ cat.name }}</h2>
+
+                    <p>{{ cat.description }}</p>
+
+                    <p>
+                        <a class="btn btn-secondary"
+                           href="{{ path('app_category', {'slug': cat.slug}) }}">
+                            View details
+                        </a>
+                    </p>
+
+                </div>
+            {% endfor %}
+        </div>
+
+
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette">
+            <div class="col-md-7">
+                <h2 class="featurette-heading fw-normal lh-1">Nouvelle collection été 2026 <span class="text-body-secondary">It’ll blow your mind.</span></h2>
+                <p class="lead">Découvrez nos sacs légers en toile et cuir clair, pensés pour la saison estivale. Couleurs naturelles, designs épurés et formats pratiques pour vos sorties, voyages et journées ensoleillées.</p>
+            </div>
+            <div class="col-md-5">
+                <img src="{{ asset('uploads/christian-agbede--Y5m5yvw4Yg-unsplash.jpg') }}"
+                     class="featurette-image img-fluid mx-auto"
+                     alt="Feature image">            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette">
+            <div class="col-md-7 order-md-2">
+                <h2 class="featurette-heading fw-normal lh-1">Meilleure vente <br> <span class="text-body-secondary">Le sac signature</span></h2>
+                <p class="lead">Notre sac à main en cuir premium noir est notre best-seller. <br>Élégant, minimaliste et conçu pour durer,<br> il s’adapte parfaitement aux looks quotidiens comme aux tenues habillées. Stock limité — il ne reste que quelques pièces.</p>
+            </div>
+            <div class="col-md-5 order-md-1">
+                <img src="{{ asset('uploads/irene-kredenets-tcVH_BwHtrc-unsplash.jpg') }}"
+                     class="featurette-image img-fluid mx-auto"
+                     alt="Feature image">            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette">
+            <div class="col-md-7">
+                <h2 class="featurette-heading fw-normal lh-1">Les accessoires qui complètent  <span class="text-body-secondary">votre style</span></h2>
+                <p class="lead">Ceinture en cuir, portefeuilles élégants et pochettes assorties : <br> des détails essentiels pour
+                    finaliser votre look avec cohérence et élégance. <br> Chaque
+                    pièce est pensée pour s’associer parfaitement à nos sacs. <p/></div>
+            <div class="col-md-5">
+                <img src="{{ asset('uploads/valentina-schick-cMP0tw8uZ28-unsplash.jpg') }}"
+                     class="featurette-image img-fluid mx-auto"
+                     alt="Feature image">            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <!-- /END THE FEATURETTES -->
+
+    </div><!-- /.container -->
+    </main>
+
+{% endblock %}

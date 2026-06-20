@@ -1,0 +1,19 @@
+{% extends '/base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-5">
+
+        <h1>Espace privee !</h1>
+        </br>
+
+        <div class="container ">
+            {% include 'account/_menu.html.twig' %}
+            <h4>Ajouter votre address</h4>
+
+            {{ form(addressForm) }}
+        </div>
+
+
+    </div>
+
+{% endblock %}
