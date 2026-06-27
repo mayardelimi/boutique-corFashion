@@ -66,6 +66,9 @@ class Cart{
     public function getTotal(){
         $cart =$this->requestStack->getSession()->get("cart");
         $s=0;
+        if (!isset($cart)){
+            return $s;
+        }
         foreach ($cart as $product){
             $s+= $product['qty'] * $product['object']->getPriceWt();
         }

@@ -33,7 +33,7 @@ class CategoryCrudController extends AbstractCrudController
         return [
             TextField::new('name')->setLabel('Title de la categorie'),
             SlugField::new('slug')->setLabel('URL de votre categorie generee auotomatiquement ')->setTargetFieldName('name'),
-            ImageField::new('image')->setUploadDir('/uploads/'),
+            ImageField::new('image')->setUploadDir('/public/uploads/'),
             TextAreaField::new('description')->setLabel('Description de la categorie'),
         ];
     }

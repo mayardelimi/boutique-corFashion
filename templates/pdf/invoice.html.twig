@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture Commande N°{{ order.id }}</title>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; color: #333; font-size: 13px; line-height: 1.5; }
+        .invoice-container { padding: 10px; }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .header-table td { vertical-align: top; }
+        .title { font-size: 24px; font-weight: bold; color: #222; }
+        .date { color: #666; margin-top: 5px; }
+
+        /* Shipping & Carrier blocks styled without Bootstrap cols */
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .info-table td { width: 50%; padding: 10px; border: 1px solid #eee; vertical-align: top; background: #fdfdfd; }
+        .info-title { font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 11px; color: #555; }
+
+        /* Document Itemized Table */
+        .items-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .items-table th { background: #f5f5f5; border-bottom: 2px solid #ddd; padding: 8px; text-align: left; font-weight: bold; }
+        .items-table td { padding: 10px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+
+        /* Totals Block */
+        .totals-container { width: 100%; margin-top: 20px; }
+        .totals-table { width: 40%; margin-left: 60%; border-collapse: collapse; }
+        .totals-table td { padding: 6px 8px; }
+        .totals-table tr.final-total td { font-size: 16px; font-weight: bold; border-top: 2px solid #333; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="invoice-container">
+
+    <table class="header-table">
+        <tr>
+            <td>
+                <div class="title">FACTURE</div>
+                <div class="date">Passée le {{ order.createdAt|date('d/m/Y H:i') }}</div>
+            </td>
+            <td class="text-right">
+                <h3>Commande N°{{ order.id }}</h3>
+                <span>Statut : Réglée</span>
+            </td>
+        </tr>
+    </table>
+
+    <table class="info-table">
+        <tr>
+            <td>
+                <div class="info-title">Adresse de livraison</div>
+                <div>{{ order.delivery|raw }}</div>
+            </td>
+            <td>
+                <div class="info-title">Transporteur</div>
+                <div>{{ order.carrierName }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <div>
+        <strong>Contenu de la commande :</strong>
+    </div>
+
+    <table class="items-table">
+        <thead>
+        <tr>
+            <th scope="col">Produit</th>
+            <th scope="col" class="text-center">Quantité</th>
+            <th scope="col" class="text-right">Prix unitaire</th>
+            <th scope="col" class="text-center">TVA</th>
+            <th scope="col" class="text-right">Total TTC</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in order.orderDetails %}
+            <tr>
+                <td>{{ product.productName }}</td>
+                <td class="text-center">{{ product.productQuantity }}</td>
+                <td class="text-right">{{ product.Price|price }}</td>
+                <td class="text-center">{{ product.productTva }}%</td>
+                {% set coeff = 1 + (product.productTva / 100) %}
+                <td class="text-right">{{ ((product.Price * coeff) * product.productQuantity)|price }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td>{{ order.carrierName }} (Transport)</td>
+            <td class="text-center">-</td>
+            <td class="text-right">-</td>
+            <td class="text-center">-</td>
+            <td class="text-right">{{ order.carrierPrice|price }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="totals-container">
+        <table class="totals-table">
+            <tr>
+                <td><strong>Total TVA :</strong></td>
+                <td class="text-right">{{ order.totalTva|price }}</td>
+            </tr>
+            <tr class="final-total">
+                <td><strong>Total T.T.C :</strong></td>
+                <td class="text-right">{{ order.totalWt|price }}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -50,7 +50,7 @@ class AddressController extends AbstractController{
                 'success', 'address added successfully'
             );
 
-            if($cart->fullQuantity() > 0){
+            if($cart->getCartQte() > 0){
                 return $this->redirectToRoute('app_account_addresses');
 
             }

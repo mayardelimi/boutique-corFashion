@@ -7,25 +7,18 @@ use Mailjet\Resources;
 
 class Mail
 {
-    public function send($to_email, $to_name, $subject, $vars = null, $template)
+    public function send($to_email, $to_name, $subject, $vars = [])
     {
 
-        $templatePath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Mail' . DIRECTORY_SEPARATOR . $template;
 
-        if (!file_exists($templatePath)) {
-            throw new \Exception("Template file not found at: " . $templatePath);
-        }
-
-        $content = file_get_contents($templatePath);
-
-        if ($vars && is_array($vars)) {
-            foreach ($vars as $key => $var) {
-                $content = str_replace('{' . $key . '}', $var, $content);
-            }
-        }
 
         $apikey = $_ENV['MAILGUN_KEY'];
         $apisecret = $_ENV['MAILGUN_SECRET'];
+
+        if (!$apikey || !$apisecret) {
+            throw new \Exception("Mailjet API configuration keys are missing in your .env file.");
+        }
+
 
         $mj = new Client($apikey, $apisecret, true, ['version' => 'v3.1']);
 
@@ -33,8 +26,8 @@ class Mail
             'Messages' => [
                 [
                     'From' => [
-                        'Email' => "dlmmayar@gmail.com",
-                        'Name' => "Me"
+                        'Email' => "mayardelimi@gmail.com",
+                        'Name' => "La Boutique Française"
                     ],
                     'To' => [
                         [
@@ -45,9 +38,7 @@ class Mail
                     'TemplateID' => 8129540,
                     'TemplateLanguage' => true,
                     'Subject' => $subject,
-                    'Variables' => [
-                        'content' => $content,
-                    ]
+                    'Variables' => $vars
                 ]
             ]
         ];

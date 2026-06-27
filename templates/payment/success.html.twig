@@ -1,10 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello LoginController!{% endblock %}
+{% block title %}Merci pour votre commande !{% endblock %}
 
 {% block body %}
-    <div class = 'container my-5'>
-        <h1>Merci !</h1>
+    <div class="container my-5">
+        <h1 class="display-4 text-success">Merci !</h1>
+        <p class="lead">Votre commande a été validée avec succès.</p>
+        <hr class="my-4">
 
+        <p>Référence de commande : <strong>{{ order.id }}</strong></p>
+
+        <div class="mt-4">
+            <a href="{{ path('app_invoice_download', {'stripe_session_id': order.stripeSessionId}) }}" class="btn btn-secondary ">
+                Télécharger ma facture (PDF)
+            </a>
+            <a href="{{ path('app_home') }}" class="btn btn-outline-secondary ms-2">
+                Retour à l'accueil
+            </a>
+        </div>
     </div>
 {% endblock %}

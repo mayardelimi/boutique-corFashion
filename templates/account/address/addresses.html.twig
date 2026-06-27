@@ -6,8 +6,11 @@
         <h1>Espace privee !</h1>
         </br>
 
-        <div class=" cold md-9 ">
-            {% include 'account/_menu.html.twig' %}
+        <div class=" row ">
+            <div class=" col-md-3 ">
+                {% include 'account/_menu.html.twig' %}
+            </div>
+         <div class="col-md-9">
             <div class="d-flex justify-content-between">
             <h4>Liste de mes addresses</h4>
             <a href="{{ path('app_account_address_form') }}" class="btn btn-light">Ajouter use address </a>
@@ -34,12 +37,11 @@
                     </div>
                 </div>
                 {% endfor %}
-            </div>
+           </div>
 
-
+                </div>
 
         </div>
 
     </div>
-
 {% endblock %}

@@ -1,6 +1,4 @@
 {% extends 'base.html.twig' %}
-
-
 {% block body %}
     <div class="container my-5">
         <div class="row">
@@ -8,12 +6,33 @@
                   <img src="/uploads/{{product.illustration }}" alt="image" class="img-fluid">
             </div>
 
-        <div class="col-md-6 text-decoration-none">
-        <small><i><a href="{{ path('app_category' , {slug : product.category.slug} ) }}">{{ product.category.name }} </a> >{{ product.name }}</i> </small>
-       <h1> {{ product.name }}</h1>
-        <span class="d-block mb-3">{{ product.price|price}}</span>
+        <div class="col-md-6 ">
 
-            {{ product.description|raw }}
+        <small>
+            <i><a class="text-decoration-none" href="{{ path('app_category' , {slug : product.category.slug} ) }}">{{ product.category.name }} </a>  >>>  {{ product.name }}</i>
+        </small>
+            <br>
+            <br>
+            <div class="row align-content-between">
+                <div class="col">
+                    <h1 class="h3 mb-1">{{ product.name }}</h1>
+                    <h4 class="text-muted m-0">{{ product.price|price }}</h4>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ path('app_wishlist_add', { 'id': product.id }) }}" class="text-decoration-none">
+                        {% if product.id in wishlistIds %}
+                            <i data-feather="heart" fill="black" stroke="black"></i>
+                        {% else %}
+                            <i data-feather="heart" stroke="black"></i>
+                        {% endif %}
+                    </a>
+                </div>
+
+
+
+            </div>
+
+          <p> {{ product.description}} </p>
             <a href="{{ path('app_cart_add' , {id : product.id}) }}">
         <button class='btn btn-success w-100 mt-5'>Ajouter au panier</button> </a>
         </div>

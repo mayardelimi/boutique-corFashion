@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Entity\Product;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -59,10 +60,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user')]
     private Collection $orders;
 
+    /**
+     * @var Collection<int, product>
+     */
+    #[ORM\ManyToMany(targetEntity: Product::class)]
+    private Collection $saved;
+
     public function __construct()
     {
         $this->addresses = new ArrayCollection();
         $this->orders = new ArrayCollection();
+        $this->saved = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,6 +121,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 
     /**
      * @see PasswordAuthenticatedUserInterface
@@ -226,6 +235,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $order->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, product>
+     */
+    public function getSaved(): Collection
+    {
+        return $this->saved;
+    }
+
+    public function addSaved(product $saved): static
+    {
+        if (!$this->saved->contains($saved)) {
+            $this->saved->add($saved);
+        }
+
+        return $this;
+    }
+
+    public function removeSaved(product $saved): static
+    {
+        $this->saved->removeElement($saved);
 
         return $this;
     }

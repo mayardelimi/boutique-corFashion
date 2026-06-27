@@ -66,13 +66,11 @@
     ================================================== -->
     <!-- Wrap the rest of the page in another container to center all the content. -->
 
-    <div class="container marketing" id="categories" >
 
+        <div id="categories" class="row flex-nowrap overflow-x-auto my-3 mx-lg-5 text-center" style="scrollbar-width: thin; -webkit-overflow-scrolling: touch;">
 
-
-        <div class="row">
             {% for cat in categories %}
-                <div class="col-lg-4">
+                <div class="col-lg-3 px-5">
                     <img src="/uploads/{{cat.image}}"
                          alt="{{ cat.name }}"
                          class="rounded-circle"
@@ -94,6 +92,8 @@
         </div>
 
 
+
+    <div class="container marketing"  >
 
         <hr class="featurette-divider">
 
