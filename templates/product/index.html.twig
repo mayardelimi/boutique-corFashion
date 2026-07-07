@@ -1,41 +1,419 @@
 {% extends 'base.html.twig' %}
+
 {% block body %}
+
+    <style>
+        .carousel-inner{
+            height: 700px;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+            animation: pulse-badge 2s infinite;
+            font-size: 0.75rem;
+        }
+
+        .discount-badge .discount-pct {
+            font-size: 0.9rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .discount-badge .old-price {
+            font-size: 0.65rem;
+            text-decoration: line-through;
+            opacity: 0.85;
+            margin-top: 2px;
+        }
+
+        .discount-badge .new-price {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-custom {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb-custom a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-custom a:hover {
+            color: #dc3545;
+        }
+
+        /* Color swatches */
+        .color-swatch {
+            transition: all 0.2s ease;
+            position: relative;
+            border: 2px solid #dee2e6;
+        }
+        .color-swatch:hover {
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .color-swatch.selected {
+            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #212529;
+            transform: scale(1.1);
+            border-color: #212529;
+        }
+
+        /* Size buttons */
+        .size-btn {
+            min-width: 50px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .size-btn:hover:not(:disabled) {
+            background-color: #212529;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .size-btn.selected {
+            background-color: #212529;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(33,37,41,0.3);
+        }
+        .size-btn:disabled {
+            opacity: 0.4;
+            text-decoration: line-through;
+            cursor: not-allowed;
+        }
+
+        /* Add to cart button */
+        #addToCartBtn:not(:disabled) {
+            background: linear-gradient(135deg, #212529 0%, #495057 100%);
+            border: none;
+            box-shadow: 0 4px 15px rgba(33,37,41,0.3);
+        }
+        #addToCartBtn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33,37,41,0.4);
+        }
+
+        /* Wishlist heart */
+        .wishlist-heart {
+            transition: transform 0.2s ease;
+        }
+        .wishlist-heart:hover {
+            transform: scale(1.2);
+        }
+    </style>
+
     <div class="container my-5">
+        <nav class="breadcrumb-custom">
+            <a href="{{ path('app_home') }}">Accueil</a>
+            <span class="mx-2">/</span>
+            <a href="{{ path('app_category', {slug: product.category.slug}) }}">{{ product.category.name }}</a>
+            <span class="mx-2">/</span>
+            <span class="text-dark">{{ product.name }}</span>
+        </nav>
+
         <div class="row">
-            <div class="col-md-6 ">
-                  <img src="/uploads/{{product.illustration }}" alt="image" class="img-fluid">
-            </div>
+            <div class="col-md-6 position-relative">
+                {% if product.images is not empty %}
+                    {% if product.discountPct > 0 %}
+                        <div class="discount-badge">
+                            <span class="discount-pct">-{{ product.discountPct }}%</span>
+                            <span class="old-price">{{ product.price|price }}</span>
+                            <span class="new-price">{{ (product.price * (1 - (product.discountPct / 100)))|price }}</span>
+                        </div>
+                    {% endif %}
 
-        <div class="col-md-6 ">
+                    <div id="productCarousel" class="carousel slide border rounded" data-bs-interval="false">
+                        <div class="carousel-inner">
+                            {% for image in product.images %}
+                                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                    <img src="/uploads/{{ image.imagePath }}" alt="{{ product.name }}" class="w-100" style="height: 800px; object-fit: cover;">
+                                </div>
+                            {% endfor %}
+                        </div>
 
-        <small>
-            <i><a class="text-decoration-none" href="{{ path('app_category' , {slug : product.category.slug} ) }}">{{ product.category.name }} </a>  >>>  {{ product.name }}</i>
-        </small>
-            <br>
-            <br>
-            <div class="row align-content-between">
-                <div class="col">
-                    <h1 class="h3 mb-1">{{ product.name }}</h1>
-                    <h4 class="text-muted m-0">{{ product.price|price }}</h4>
-                </div>
-                <div class="col-auto">
-                    <a href="{{ path('app_wishlist_add', { 'id': product.id }) }}" class="text-decoration-none">
-                        {% if product.id in wishlistIds %}
-                            <i data-feather="heart" fill="black" stroke="black"></i>
-                        {% else %}
-                            <i data-feather="heart" stroke="black"></i>
+                        {% if product.images|length > 1 %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                <span class="visually-hidden">Précédent</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                <span class="visually-hidden">Suivant</span>
+                            </button>
                         {% endif %}
-                    </a>
-                </div>
+                    </div>
 
-
-
+                {% endif %}
             </div>
 
-          <p> {{ product.description}} </p>
-            <a href="{{ path('app_cart_add' , {id : product.id}) }}">
-        <button class='btn btn-success w-100 mt-5'>Ajouter au panier</button> </a>
-        </div>
+            <div class="col-md-6">
+                <div class="row align-items-start mb-3">
+                    <div class="col">
+                        <h1 class="h3 mb-1 fw-bold">{{ product.name }}</h1>
+
+                        {% if product.discountPct > 0 %}
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="text-danger fw-bold fs-4">
+                                    {{ product.price|price }}
+                                </span>
+                                <small class="text-muted text-decoration-line-through fs-5">{{ (product.price + product.price * product.discountPct/100) |price }}</small>
+                                <span class="badge bg-danger">-{{ product.discountPct }}%</span>
+                            </div>
+                        {% else %}
+                            <h4 class="text-muted m-0 fs-4">{{ product.price|price }}</h4>
+                        {% endif %}
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ path('app_wishlist_add', { 'id': product.id }) }}" class="text-decoration-none wishlist-heart">
+                            {% if product.id in wishlistIds %}
+                                <i data-feather="heart" fill="#dc3545" stroke="#dc3545" style="width:24px;height:24px;"></i>
+                            {% else %}
+                                <i data-feather="heart" stroke="#212529" style="width:24px;height:24px;"></i>
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+
+                <p class="text-secondary mb-4">{{ product.description }}</p>
+
+                <hr class="my-4">
+
+                {% if product.variants is not empty %}
+                    <form action="{{ path('app_cart_add') }}" method="POST" id="addToCartForm">
+
+                        {% set colors = product.variants|map(v => v.color)|reduce((unique, color) => color in unique ? unique : unique|merge([color]), []) %}
+                        {% if colors|length > 0 %}
+                            <div class="mb-4">
+                                <label class="form-label fw-bold mb-2">Couleur</label>
+                                <div class="d-flex gap-2 flex-wrap" id="colorSwatches">
+                                    {% for color in colors %}
+                                        <button type="button"
+                                                class="btn color-swatch"
+                                                data-color="{{ color }}"
+                                                style="width: 40px; height: 40px; border-radius: 50%; background-color: {{ color|lower }};"
+                                                title="{{ color }}">
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted mt-1 d-block" id="selectedColorText">Sélectionnez une couleur</small>
+                            </div>
+                        {% endif %}
+
+                        {# Size Buttons #}
+                        {% set sizes = product.variants|map(v => v.size)|reduce((unique, size) => size in unique ? unique : unique|merge([size]), []) %}
+                        {% if sizes|length > 0 %}
+                            <div class="mb-4">
+                                <label class="form-label fw-bold mb-2">Taille</label>
+                                <div class="d-flex gap-2 flex-wrap" id="sizeButtons">
+                                    {% for size in sizes %}
+                                        <button type="button"
+                                                class="btn btn-outline-dark size-btn px-3 py-2"
+                                                data-size="{{ size }}">
+                                            {{ size }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted mt-1 d-block" id="selectedSizeText">Sélectionnez une taille</small>
+                            </div>
+                        {% endif %}
+
+                        <input type="hidden" name="variant_id" id="variantIdInput" required>
+
+                        <div id="stockIndicator" class="mb-3 d-none">
+                            <span class="badge bg-success" id="inStockBadge">
+                                <i data-feather="check-circle" class="me-1" style="width:14px;height:14px;"></i> En stock
+                            </span>
+                            <span class="badge bg-danger d-none" id="outOfStockBadge">
+                                <i data-feather="x-circle" class="me-1" style="width:14px;height:14px;"></i> Rupture de stock
+                            </span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-2">Quantité</label>
+                            <div class="input-group" style="width: 140px;">
+                                <button type="button" class="btn btn-outline-secondary" onclick="adjustQty(-1)">
+                                    <i data-feather="minus" style="width:16px;height:16px;"></i>
+                                </button>
+                                <input type="number"
+                                       name="quantity"
+                                       id="qtyInput"
+                                       value="1"
+                                       min="1"
+                                       max="1"
+                                       class="form-control text-center"
+                                       style="border-left:0;border-right:0;">
+                                <button type="button" class="btn btn-outline-secondary" onclick="adjustQty(1)">
+                                    <i data-feather="plus" style="width:16px;height:16px;"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted mt-1 d-block" id="stockCountText"></small>
+                        </div>
+
+                        <hr class="my-4">
+                        {% if totalQTE == 0 %}
+                            <button type="submit" class="btn btn-danger btn-lg w-100 py-3" id="addToCartBtn" disabled>
+        <span class="d-flex align-items-center justify-content-center gap-2">
+            <span id="btnText">Rupture de stock</span>
+            <span id="btnPrice" class="ms-2 fw-normal opacity-75"></span>
+        </span>
+                            </button>
+                        {% else %}
+                            <button type="submit" class="btn btn-dark btn-lg w-100 py-3" id="addToCartBtn" disabled>
+        <span class="d-flex align-items-center justify-content-center gap-2">
+            <i data-feather="shopping-bag" style="width:20px;height:20px;"></i>
+            <span id="btnText">Sélectionnez vos options</span>
+            <span id="btnPrice" class="ms-2 fw-normal opacity-75"></span>
+        </span>
+                            </button>
+                        {% endif %}
+                    </form>
+
+                    <script>
+                        const variants = {{ product.variants|map(v => {
+                            id: v.id,
+                            color: v.color,
+                            size: v.size,
+                            quantity: v.quantityAvailable,
+                            price: v.price ?? product.price
+                        })|json_encode|raw }};
+
+                        let selectedColor = null;
+                        let selectedSize = null;
+
+                        function adjustQty(delta) {
+                            const input = document.getElementById('qtyInput');
+                            const current = parseInt(input.value) || 1;
+                            const max = parseInt(input.max) || 999;
+                            const min = parseInt(input.min) || 1;
+
+                            let newVal = current + delta;
+                            if (newVal < min) newVal = min;
+                            if (newVal > max) newVal = max;
+
+                            input.value = newVal;
+                        }
+
+                        document.getElementById('qtyInput').addEventListener('change', function() {
+                            const max = parseInt(this.max) || 999;
+                            const min = parseInt(this.min) || 1;
+                            let val = parseInt(this.value) || 1;
+                            if (val > max) val = max;
+                            if (val < min) val = min;
+                            this.value = val;
+                        });
+
+                        function updateVariantSelection() {
+                            const variant = variants.find(v =>
+                                v.color === selectedColor && v.size === selectedSize
+                            );
+
+                            const btn = document.getElementById('addToCartBtn');
+                            const btnText = document.getElementById('btnText');
+                            const btnPrice = document.getElementById('btnPrice');
+                            const stockInd = document.getElementById('stockIndicator');
+                            const inStock = document.getElementById('inStockBadge');
+                            const outStock = document.getElementById('outOfStockBadge');
+                            const hiddenInput = document.getElementById('variantIdInput');
+                            const qtyInput = document.getElementById('qtyInput');
+                            const stockCountText = document.getElementById('stockCountText');
+
+                            if (variant) {
+                                hiddenInput.value = variant.id;
+
+                                qtyInput.max = variant.quantity;
+                                stockCountText.textContent = variant.quantity + ' disponible' + (variant.quantity > 1 ? 's' : '');
+
+                                stockInd.classList.remove('d-none');
+
+                                if (variant.quantity > 0) {
+                                    btn.disabled = false;
+                                    btnText.textContent = 'Ajouter au panier';
+                                    inStock.classList.remove('d-none');
+                                    outStock.classList.add('d-none');
+                                    btnPrice.textContent = variant.price + '€';
+                                } else {
+                                    btn.disabled = true;
+                                    btnText.textContent = 'Rupture de stock';
+                                    inStock.classList.add('d-none');
+                                    outStock.classList.remove('d-none');
+                                    btnPrice.textContent = '';
+                                    stockCountText.textContent = '';
+                                }
+                            } else {
+                                btn.disabled = true;
+                                btnText.textContent = 'Sélectionnez vos options';
+                                stockInd.classList.add('d-none');
+                                hiddenInput.value = '';
+                                qtyInput.max = 1;
+                                stockCountText.textContent = '';
+                                btnPrice.textContent = '';
+                            }
+                        }
+
+                        document.querySelectorAll('.color-swatch').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
+                                this.classList.add('selected');
+                                selectedColor = this.dataset.color;
+                                document.getElementById('selectedColorText').textContent = selectedColor;
+                                updateVariantSelection();
+                            });
+                        });
+
+                        document.querySelectorAll('.size-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                if (this.disabled) return;
+                                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+                                this.classList.add('selected');
+                                selectedSize = this.dataset.size;
+                                document.getElementById('selectedSizeText').textContent = 'Taille ' + selectedSize;
+                                updateVariantSelection();
+                            });
+                        });
+
+                        document.querySelectorAll('.size-btn').forEach(sizeBtn => {
+                            const size = sizeBtn.dataset.size;
+                            const hasStock = variants.some(v => v.size === size && v.quantity > 0);
+                            if (!hasStock) sizeBtn.disabled = true;
+                        });
+
+
+                    </script>
+
+                {% else %}
+                    <div class="alert alert-warning mt-4 rounded-3 border-0 shadow-sm" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i data-feather="alert-circle" class="me-2" style="width:20px;height:20px;"></i>
+                            <strong>Ce produit n'est pas disponible pour le moment.</strong>
+                        </div>
+                        <p class="mb-0 mt-2 text-muted">Revenez plus tard</p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

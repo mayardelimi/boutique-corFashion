@@ -25,13 +25,13 @@ class OrderType extends AbstractType
 
             ] )
             ->add('carriers' , EntityType::class, [
-            'label' => 'choisissez votre transporteur',
-            'required' => true,
-            'class'=> Carrier::class,
-            'expanded' =>True,
-            'label_html'=> true
+                'label' => 'choisissez votre transporteur',
+                'required' => true,
+                'class'=> Carrier::class,
+                'expanded' =>True,
+                'label_html'=> true
 
-        ] )
+            ] )
             ->add('submit', SubmitType::class,
                 ['label' => "Valider",
                     'attr' => ['class' => " btn btn-success"]])
@@ -41,7 +41,7 @@ class OrderType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-           'addresses'=>null,
+            'addresses'=>null,
         ]);
     }
 }

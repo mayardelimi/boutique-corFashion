@@ -1,22 +1,298 @@
 {% extends 'base.html.twig' %}
 
-
 {% block body %}
+    <style>
+        .category-hero {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(220,53,69,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .category-hero h1 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+
+        .product-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #fff;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .product-image-wrap {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            background: #f8f9fa;
+        }
+
+        .product-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image-wrap img {
+            transform: scale(1.08);
+        }
+
+        .discount-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 2;
+            background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+            color: white;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.35);
+            animation: pulse-tag 2.5s ease-in-out infinite;
+        }
+
+        .discount-tag .tag-pct {
+            font-size: 0.85rem;
+            line-height: 1;
+        }
+
+        .discount-tag .tag-label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulse-tag {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 2;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(4px);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+
+        .product-card:hover .wishlist-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .wishlist-btn:hover {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            transform: scale(1.1) !important;
+        }
+
+        .product-info {
+            padding: 1.25rem;
+            text-align: left;
+        }
+
+        .product-name {
+            color: #212529;
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.7em;
+        }
+
+        .product-card:hover .product-name {
+            color: #dc3545;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .price-current {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .price-original {
+            font-size: 0.85rem;
+            color: #adb5bd;
+            text-decoration: line-through;
+        }
+
+        .price-discount {
+            font-size: 0.75rem;
+            color: #dc3545;
+            font-weight: 600;
+            background: rgba(220, 53, 69, 0.08);
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .quick-add {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #212529 0%, #495057 100%);
+            color: #fff;
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+        }
+
+        .product-card:hover .quick-add {
+            transform: translateY(0);
+        }
+
+        .quick-add:hover {
+            background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #adb5bd;
+        }
+
+        .breadcrumb-custom {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb-custom a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-custom a:hover {
+            color: #dc3545;
+        }
+    </style>
+
     <div class="container my-5">
-        <h1>{{ category.name }}</h1>
-        <p>Cette catégorie contient {{ category.products|length }} produits</p>
+        <nav class="breadcrumb-custom">
+            <a href="{{ path('app_home') }}">Accueil</a>
+            <span class="mx-2">/</span>
+            <span class="text-dark">{{ category.name }}</span>
+        </nav>
 
-        <div class="row">
-            {% for product in category.products %}
-                <div class="col-md-3 mb-4 text-center text-decoration-none">
-                    <a href="{{ path('app_product' , {slug : product.slug }) }}" class="text-decoration-none">
-                    <img src="{{ asset('uploads/' ~ product.illustration) }}" class="img-fluid" alt="{{ product.name }}">
-
-                    <h5 class="mt-2 text-dark">{{ product.name }}</h5>
-                    </a>
-                    <span class="d-block fw-bold">{{ product.priceWt|price }}</span>
-                </div>
-            {% endfor %}
+        <div class="mb-5">
+            <h1 class="display-5 mb-2">{{ category.name }}</h1>
+            <p class="text-muted mb-0">
+                <span class="fw-bold text-dark">{{ category.products|length }}</span>
+                produit{{ category.products|length > 1 ? 's' : '' }} disponible{{ category.products|length > 1 ? 's' : '' }}
+            </p>
         </div>
+
+        {% if category.products|length > 0 %}
+            <div class="row g-4">
+                {% for product in category.products %}
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="product-card">
+                            <a href="{{ path('app_product', {slug: product.slug}) }}" class="text-decoration-none d-block">
+                                <div class="product-image-wrap">
+                                    {% if product.images is not empty and product.images.first %}
+                                        <img src="/uploads/{{ product.images.first.imagePath }}" alt="{{ product.name }}" loading="lazy">
+                                    {% else %}
+                                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                            <i data-feather="image" style="width:48px;height:48px;opacity:0.3;"></i>
+                                        </div>
+                                    {% endif %}
+
+                                    {# Discount Tag #}
+                                    {% if product.discountPct > 0 %}
+                                        <div class="discount-tag">
+                                            <span class="tag-pct">-{{ product.discountPct }}%</span>
+                                            <span class="tag-label">Promo</span>
+                                        </div>
+                                    {% endif %}
+
+
+                                </div>
+
+                                <div class="product-info">
+                                    <h5 class="product-name">{{ product.name }}</h5>
+
+                                    <div class="price-row">
+                                        {% if product.discountPct > 0 %}
+                                            <span class="price-current">{{ product.price |price }}</span>
+                                            <span class="price-original">{{ (product.price + (product.price *(product.discountPct / 100)))|price }}</span>
+                                            <span class="price-discount">-{{ product.discountPct }}%</span>
+                                        {% else %}
+                                            <span class="price-current">{{ product.price|price }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i data-feather="package" style="width:64px;height:64px;" class="mb-3"></i>
+                <h4 class="text-muted">Aucun produit dans cette catégorie</h4>
+                <p class="mb-0">Revenez plus tard pour découvrir nos nouveautés.</p>
+            </div>
+        {% endif %}
     </div>
+
 {% endblock %}

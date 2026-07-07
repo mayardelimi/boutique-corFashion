@@ -47,6 +47,7 @@ class Order
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $stripe_session_id = null;
 
+
     public function __construct()
     {
         $this->orderDetails = new ArrayCollection();
@@ -190,4 +191,6 @@ class Order
 
         return $this;
     }
+
+
 }

@@ -1,77 +1,70 @@
 {% extends 'base.html.twig' %}
-
-
 {% block body %}
     <div class="container my-5">
-        <h1>Recapitulatif de ma commande </h1>
+        <h1>Récapitulatif de ma commande</h1>
         <div class="row">
             <div class="col-md-8 bg-light">
-                <div class=" bg-light">
-                       -> Contenu de mon panier <br/>
-
-                        {% for product in cart %}
-                            <div class="row mt-2 ">
-                                <div class="col-md-2">
-                                    <img src="/uploads/{{ product.object.illustration }}" class="img-fluid" alt="image">
-                                </div>
-                                <div class="col-md-5">
-                                    <strong>{{ product.object.name }}</strong>
-                                    <span class="d-block"> prix unitaire : {{ product.object.priceWt|price }}</span>
-                                </div>
-                                <div class="col-md-2 text-right" >
-
-                                    <div  class="badge text-bg-secondary"> x{{ product.qty }}</div>
-                                </div>
-                                <div class="col-md-2 " >
-                                    <strong>{{ (product.qty * product.object.priceWt)|price }}</strong>
-
-                                </div>
-
+                <div class="bg-light">
+                    -> Contenu de mon panier <br/>
+                    {% for item in cart %}
+                        {% set variant = item.object %}
+                        {% set product = variant.product %}
+                        <div class="row mt-2">
+                            <div class="col-md-2">
+                                {% if product.images is not empty %}
+                                    <img src="/uploads/{{ product.images.first.imagePath }}" class="img-fluid" alt="{{ product.name }}">
+                                {% endif %}
                             </div>
-                        {% endfor %}
+                            <div class="col-md-5">
+                                <strong>{{ product.name }}</strong>
+                                <span class="d-block">Couleur: {{ variant.color }} | Taille: {{ variant.size }}</span>
+                                <span class="d-block">Prix unitaire : {{ product.priceWt|price }}</span>
+                            </div>
+                            <div class="col-md-2 text-right">
+                                <div class="badge text-bg-secondary">x{{ item.qty }}</div>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>{{ (item.qty * product.priceWt)|price }}</strong>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
                 <br/>
                 <div class="bg-light p-3">
-               <strong> Adresse de livraison</strong>  <hr/>
-                {{ choices.addresses.lastname }}  {{ choices.addresses.firstname }} <br/>
-                {{ choices.addresses.address }}<br/>
-                {{ choices.addresses.city }}{{ choices.addresses.country }}
-
+                    <strong>Adresse de livraison</strong><hr/>
+                    {{ choices.addresses.lastname }} {{ choices.addresses.firstname }}<br/>
+                    {{ choices.addresses.address }}<br/>
+                    {{ choices.addresses.city }} {{ choices.addresses.country }}
                 </div>
                 <br/>
-                <div class="bg-light p-3 ">
-                <strong>Transporteur </strong> <hr/>
-                {{ choices.carriers.name }}
-                {{ choices.carriers.description }}
-                <br/>
+                <div class="bg-light p-3">
+                    <strong>Transporteur</strong><hr/>
+                    {{ choices.carriers.name }}
+                    {{ choices.carriers.description }}
+                    <br/>
                 </div>
             </div>
-
-
-
             <div class="col-md-4">
-
                 <div class="bg-light p-2">
-                    <div class=" d-flex justify-content-between">
+                    <div class="d-flex justify-content-between">
                         <span class="fw-bold">Total produits :</span>
-                        <span> {{ totalWt |price}}</span>
+                        <span>{{ totalWt|price }}</span>
                     </div>
-                    <div class=" d-flex justify-content-between mt-3">
+                    <div class="d-flex justify-content-between mt-3">
                         <span class="fw-bold">Total transporteur:</span>
-                        <span>                 {{ choices.carriers.prix|price }}
-</span>
+                        <span>{{ choices.carriers.prix|price }}</span>
                     </div>
-                    <div class=" d-flex justify-content-between mt-3">
+                    <div class="d-flex justify-content-between mt-3">
                         <span class="fw-bold">Total commande:</span>
-                        <span>                 {{ (totalWt + choices.carriers.prix)|price }}</span>
+                        <span>{{ (totalWt + choices.carriers.prix)|price }}</span>
                     </div>
                     <div>
                         <a href="{{ path('app_payment', {'id_order': order.id}) }}" class="btn btn-success w-100 mt-3">
                             Payer
-                        </a>                    </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 {% endblock %}

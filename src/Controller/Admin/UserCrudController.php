@@ -29,9 +29,8 @@ class UserCrudController extends AbstractCrudController
             TextField::new('firstname')->setLabel('Nom'),
             TextField::new('lastname')->setLabel('Prenom'),
             ChoiceField::new('roles')->setChoices([
-                'ROLE_USER' => 'Utilisateur',
-                'ROLE_ADMIN' => 'Admin',
-            ])->allowMultipleChoices()->renderAsBadges(),
+                'ROLE_USER' ,
+                'ROLE_ADMIN' ])->allowMultipleChoices()->renderAsBadges(),
             TextField::new('email')->setLabel('Email')->onlyOnIndex(),
         ];
     }
