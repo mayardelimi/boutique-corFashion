@@ -1,0 +1,44 @@
+<?php
+namespace App\Controller;
+
+use App\Repository\ProductRepository;
+use App\Service\Chatbot;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+class ChatbotController extends AbstractController
+{
+    #[Route('/api/chat', name: 'api_chat', methods: ['POST'])]
+    public function chat(
+        Request $request,
+        Chatbot $chatbot,
+        ProductRepository $productRepository,
+    ): JsonResponse {
+        $payload = json_decode($request->getContent(), true);
+        $userMessage = trim($payload['message'] ?? '');
+
+        if ($userMessage === '') {
+            return $this->json(['reply' => 'Please tell me what you\'re looking for!'], 400);
+        }
+
+        $availableCategories = $productRepository->getDistinctCategoryNames();
+        $filters = $chatbot->extractFilters($userMessage, $availableCategories);
+        $products = $productRepository->findByFilters($filters);
+        $reply = $chatbot->formatReply($userMessage, $products);
+
+        return $this->json([
+            'reply' => $reply,
+            'products' => array_map(fn($p) => [
+                'id' => $p->getId(),
+                'name' => $p->getName(),
+                'slug' => $p->getSlug(),
+                'price' => $p->getPrice(),
+                'priceWithTax' => $p->getPriceWt(),
+                'category' => $p->getCategory()?->getName(),
+                'imageUrl' => $p->getImages()->first() ? $p->getImages()->first()->getImagePath() : null,
+            ], $products),
+        ]);
+    }
+}
